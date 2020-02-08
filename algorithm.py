@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 
 
@@ -145,7 +147,7 @@ def find_path(grid, inplace=False):
         current_index = CLOSED[:, : 2].tolist().index(current[3:].tolist())
 
     if not inplace:
-        return grid, OPEN, CLOSED
+        return grid
 
 
 def find_path_animated(grid):
@@ -214,16 +216,36 @@ def find_path_animated(grid):
 
 
 if __name__ == "__main__":
-    initial_grid = np.zeros((9, 9))
+    import argparse
 
-    # start = np.random.randint(0, 9, 2)
-    initial_grid[0, 0] = 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--filename',
+                        default=None, type=str,
+                        help='The name of the file containing the grid')
+    args = parser.parse_args()
 
-    initial_grid[1, 1] = -1
+    if args.filename:
+        with open(args.filename) as fp:
+            initial_grid = json.load(fp)
+            initial_grid = np.array(initial_grid)
 
-    # end = np.random.randint(0, 9, 2)
-    initial_grid[2, 2] = 2
+        # Check if grid is in the correct format.
+        invalid_values = initial_grid[(initial_grid < -1) |
+                                      (initial_grid > 2)].astype(str)
+        if invalid_values.tolist():
+            raise ValueError(
+                f'Grid contains invalid value(s) : {", ".join(invalid_values)}')
 
-    path, OPEN, CLOSED = find_path(initial_grid)
+    else:
+
+        initial_grid = np.zeros((9, 9))
+
+        start = np.random.randint(0, 9, 2)
+        initial_grid[start[0], start[1]] = 1
+
+        end = np.random.randint(0, 9, 2)
+        initial_grid[end[0], end[1]] = 2
+
+    path = find_path(initial_grid)
     print(f'\nInitial grid:\n{initial_grid}')
     print(f'\nPATH: \n{path}')
