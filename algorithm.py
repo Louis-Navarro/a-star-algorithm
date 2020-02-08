@@ -233,8 +233,9 @@ if __name__ == "__main__":
         invalid_values = initial_grid[(initial_grid < -1) |
                                       (initial_grid > 2)].astype(str)
         if invalid_values.tolist():
+            invalid_values = ", ".join(invalid_values)
             raise ValueError(
-                f'Grid contains invalid value(s) : {", ".join(invalid_values)}')
+                f'Grid contains invalid value(s) : {invalid_values}')
 
     else:
 
