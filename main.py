@@ -1,6 +1,10 @@
+import algorithm
+from threading import Thread
+
 import pygame as pg
 import numpy as np
-import algorithm
+
+pg.init()
 
 #############
 # VARIABLES #
@@ -12,7 +16,12 @@ win = pg.display.set_mode((win_side, win_side))
 pg.display.set_caption('A* Algorithm')
 
 # Grid
-grid = np.zeros((win_side // 10, win_side // 10))
+square_size = 10
+grid = np.zeros((win_side // square_size, win_side // square_size))
+values = grid.copy()
+
+# Font
+font = pg.font.SysFont('sourcecodepro', 5)
 
 #############
 # FUNCTIONS #
@@ -22,31 +31,47 @@ grid = np.zeros((win_side // 10, win_side // 10))
 def draw_window():
     win.fill((255, 255, 255))
 
-    for i in range(50):
-        pg.draw.line(win, 0, (10 * i, 0), (10 * i, win_side))
-        pg.draw.line(win, 0, (0, 10 * i), (win_side, 10 * i))
-
     walls = np.argwhere(grid == -1)
     for wall in walls:
-        x = wall[1] * 10
-        y = wall[0] * 10
-        pg.draw.rect(win, 0, (x, y, 10, 10))
+        x = wall[1] * square_size
+        y = wall[0] * square_size
+        pg.draw.rect(win, 0, (x, y, square_size, square_size))
 
-    start = np.argwhere(grid == 1)
-    if start.any():
-        pg.draw.rect(win, (0, 255, 0),
-                     (start[0, 1] * 10, start[0, 0] * 10, 10, 10))
+    green = np.argwhere(grid == 1)
+    if green.any():
+        for square in green:
+            pg.draw.rect(win, (0, 255, 0),
+                         (square[1] * square_size, square[0] * square_size,
+                          square_size, square_size))
 
-    end = np.argwhere(grid == 2)
-    if end.any():
-        pg.draw.rect(win, (255, 0, 0),
-                     (end[0, 1] * 10, end[0, 0] * 10, 10, 10))
+    red = np.argwhere(grid == 2)
+    if red.any():
+        for square in red:
+            pg.draw.rect(win, (255, 0, 0),
+                         (square[1] * square_size, square[0] * square_size,
+                          square_size, square_size))
 
     path = np.argwhere(grid == 3)
     if path.any():
         for square in path:
             pg.draw.rect(win, (0, 0, 255),
-                         (square[1] * 10, square[0] * 10, 10, 10))
+                         (square[1] * square_size, square[0] * square_size,
+                          square_size, square_size))
+
+    f_costs = np.argwhere(values != 0)
+    if f_costs.any():
+        for square in f_costs:
+            cost = values[square[0], square[1]]
+            text = font.render(f'{cost:.0f}', True, (0, 0, 0), (255, 255, 255))
+
+            x = square[1] * square_size + 2
+            y = square[0] * square_size
+
+            win.blit(text, (x, y))
+
+    for i in range(win_side // square_size):
+        pg.draw.line(win, 0, (square_size * i, 0), (square_size * i, win_side))
+        pg.draw.line(win, 0, (0, square_size * i), (win_side, square_size * i))
 
     pg.display.flip()
 
@@ -56,8 +81,8 @@ def check_click():
 
     if any(pressed):
         pos = pg.mouse.get_pos()
-        row = pos[1] // 10
-        col = pos[0] // 10
+        row = pos[1] // square_size
+        col = pos[0] // square_size
 
         if pressed[0]:
             grid[row, col] = -1
@@ -71,13 +96,22 @@ def check_click():
 
 
 def check_presses():
+    global grid, values, pressed_enter
+
     pressed = pg.key.get_pressed()
 
-    if pressed[pg.K_RETURN]:
-        algorithm.find_path(grid, True)
-        return True
+    if not pressed_enter:
+        if pressed[pg.K_RETURN]:
+            f1 = Thread(target=algorithm.find_path_animated,
+                        args=(grid,))
+            f1.start()
+            pressed_enter = True
 
-    return False
+    if pressed[pg.K_ESCAPE]:
+        grid = np.zeros((win_side // square_size, win_side // square_size))
+        values = grid.copy()
+
+        pressed_enter = False
 
 
 #############
@@ -90,7 +124,7 @@ if __name__ == '__main__':
     # clock = pg.time.Clock()
     run = True
     while run:
-        # clock.tick(60)
+        # clock.tick(1)
 
         for e in pg.event.get():
             if e.type == pg.QUIT:
@@ -98,7 +132,6 @@ if __name__ == '__main__':
 
         draw_window()
         check_click()
-        if not pressed_enter:
-            pressed_enter = check_presses()
+        check_presses()
 
     pg.quit()
