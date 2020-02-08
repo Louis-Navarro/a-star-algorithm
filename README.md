@@ -14,12 +14,13 @@ This repository is a A* algorithm I made.
 * `main.py` is a program that opens a GUI (using `pygame`) where you can create a maze.
   * To add a wall, click the left mouse button (be careful, the algorithm can cross two diagonal walls).
   * When you click the left mouse button, you will place
-    * The startng point the first time.
+    * The starting point the first time.
     * The ending point the second time.
   * To run the algorithm, press the enter key on your keyboard.
   * To clean the grid, press the escape key on your keyboard.
 * `algorithm.py` is a program that contains the A* algorithm, where you can find a path
-  * When you launch the program, a grid will be created with :
+  * If you want to use a file as a grid, you have to use the `-f` or `--filename` argument.
+  * If you don't specify a file, the program will created a grid with :
     * A starting point, randomly generated.
     * An ending point, also randomly generated.
   * After creating the grid, the algorithm will find the best path and return it
