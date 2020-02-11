@@ -227,7 +227,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--filename',
+    parser.add_argument('-f', "--file", '--filename',
                         default=None, type=str,
                         help='The name of the file containing the grid')
     args = parser.parse_args()
