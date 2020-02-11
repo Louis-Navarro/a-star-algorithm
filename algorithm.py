@@ -3,23 +3,31 @@ import json
 import numpy as np
 
 
-def reveal_surrounding_nodes(node, start, end, grid, OPEN, CLOSED, animated=False):
+def reveal_surrounding_nodes(node, start, end, grid, OPEN, CLOSED, inplace=False):
     """
-    Get the indexand f cost of the surrounding nodes of a given position.
+    Get the index and f cost of the surrounding nodes of a given position.
 
     Parameters
     ----------
-    node : ndarray
+    node : array-like
         The index and the g cost of the current node.
-    start : ndarray
+    start : array-like
         The index of the start node.
-    end : ndarray
+    end : array-like
         The index of the end node.
     grid : ndarray
         The grid where the path needs to be found.
+    OPEN : ndarray
+        The list of the nodes to be evalated.
+        If a node is in the list, it will be skipped
+        if the f cost is greater or equal to the current f cost.
     CLOSED : ndarray
         The list of the evaluated nodes.
         If a node has already been evaluated, then it will be skipped
+    inplace : bool, optional
+        If True, will directly put the current square as OPEN, is used during animation.
+        If False, will not change the grid.
+        By default False
 
     Returns
     -------
@@ -59,7 +67,7 @@ def reveal_surrounding_nodes(node, start, end, grid, OPEN, CLOSED, animated=Fals
                         OPEN = np.append(OPEN, new_node)
                         OPEN = OPEN.reshape((OPEN.size // 5, 5))
 
-                        if animated:
+                        if inplace:
                             grid[index[0], index[1]] = 1
 
                     except IndexError:
