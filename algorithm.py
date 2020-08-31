@@ -107,39 +107,34 @@ if __name__ == '__main__':
 
     np.set_printoptions(threshold=sys.maxsize)
 
-    # grid = np.zeros((20, 20))
+    grid = np.zeros((20, 20))
 
-    # x1, y1 = np.random.randint(0, 20, 2)
-    # x1, y1 = 0, 0
-    # grid[x1, y1] = 1
+    x1, y1 = np.random.randint(0, 20, 2)
+    x1, y1 = 0, 0
+    grid[x1, y1] = 1
 
-    # x2, y2 = np.random.randint(0, 20, 2)
-    # x2, y2 = 15, 15
-    # grid[x2, y2] = 2
+    x2, y2 = np.random.randint(0, 20, 2)
+    x2, y2 = 15, 15
+    grid[x2, y2] = 2
 
-    # print('Initial grid :')
-    # print(grid)
+    print('Initial grid :')
+    print(grid)
 
     algo = Algorithm((20, 20))
-    # algo.find_path(grid, (x1, y1), (x2, y2))
+    algo.find_path(grid, (x1, y1), (x2, y2))
     
-    # print('End grid :')
-    # print(grid)
+    print('End grid :')
+    print(grid)
     
     # import pdb; pdb.set_trace()
 
-    pos = [(x, y) for x in range(20) for y in range(20)]
-    i=1
+    # pos = [(x, y) for x in range(20) for y in range(20)]
+    # i=1
 
-    # print(i, (0, 0), (1, 0))
-    # grid=np.zeros((20, 20))
-    # algo.find_path(grid, (0, 0), (1, 0))
-    # i+=1
-
-    for x in pos:
-        for y in pos:
-            if (x==y): continue;
-            grid=np.zeros((20, 20))
-            print(i, x, y)
-            algo.find_path(grid, x, y)
-            i+=1
+    # for x in pos:
+        # for y in pos:
+            # if (x==y): continue;
+            # grid=np.zeros((20, 20))
+            # print(i, x, y)
+            # algo.find_path(grid, x, y)
+            # i+=1
