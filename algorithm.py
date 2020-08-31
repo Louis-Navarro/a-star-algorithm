@@ -110,11 +110,9 @@ if __name__ == '__main__':
     grid = np.zeros((20, 20))
 
     x1, y1 = np.random.randint(0, 20, 2)
-    x1, y1 = 0, 0
     grid[x1, y1] = 1
 
     x2, y2 = np.random.randint(0, 20, 2)
-    x2, y2 = 15, 15
     grid[x2, y2] = 2
 
     print('Initial grid :')
