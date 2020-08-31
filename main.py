@@ -1,137 +1,143 @@
-import algorithm
-from threading import Thread
+from algorithm import Algorithm
 
 import pygame as pg
 import numpy as np
 
-pg.init()
+class Window:
+    BACKGROUND_COLOR = (255, 255, 255)
+    SEARCHED = False
 
-#############
-# VARIABLES #
-#############
+    def __init__(self, width=500, height=500, square=10, title='A* Algorithm', win=None, fps=60):
+        # General variables
+        self.width = width
+        self.height = height
+        self.square = square
+        self.fps = fps
+        self.run = True
 
-# Window
-win_side = 500
-win = pg.display.set_mode((win_side, win_side))
-pg.display.set_caption('A* Algorithm')
+        self.start = 0, 0
+        self.end = height-1, width-1
 
-# Grid
-square_size = 10
-grid = np.zeros((win_side // square_size, win_side // square_size))
-values = grid.copy()
+        # Algorithm
+        self.algo = Algorithm((height//square, width//square))
 
-# Font
-font = pg.font.SysFont('sourcecodepro', 5)
+        # Grid
+        self.grid = np.zeros((width // square, height // square))
 
-#############
-# FUNCTIONS #
-#############
+        # Pygame stuff
+        pg.init()
+        self.win = win if win else pg.display.set_mode((width, height)) # Window
+        pg.display.set_caption(title) # Title
 
+        self.font = pg.font.SysFont('sourcecodepro', 5)
 
-def draw_window():
-    win.fill((255, 255, 255))
+        self.clock = pg.time.Clock()
 
-    walls = np.argwhere(grid == -1)
-    for wall in walls:
-        x = wall[1] * square_size
-        y = wall[0] * square_size
-        pg.draw.rect(win, 0, (x, y, square_size, square_size))
+    def check_quit(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.run = False
+                return True
+        return False
 
-    green = np.argwhere(grid == 1)
-    if green.any():
-        for square in green:
-            pg.draw.rect(win, (0, 255, 0),
-                         (square[1] * square_size, square[0] * square_size,
-                          square_size, square_size))
+    def draw_window(self, refresh):
+        self.win.fill(self.BACKGROUND_COLOR)
 
-    red = np.argwhere(grid == 2)
-    if red.any():
-        for square in red:
-            pg.draw.rect(win, (255, 0, 0),
-                         (square[1] * square_size, square[0] * square_size,
-                          square_size, square_size))
+        # Wall lines
+        for i in range(1, self.width // self.square):
+            x = i * self.square
+            pg.draw.line(self.win, 0, (x, 0), (x, self.height))
 
-    path = np.argwhere(grid == 3)
-    if path.any():
-        for square in path:
-            pg.draw.rect(win, (0, 0, 255),
-                         (square[1] * square_size, square[0] * square_size,
-                          square_size, square_size))
+        for i in range(1, self.height // self.square):
+            y = i * self.square
+            pg.draw.line(self.win, 0, (0, y), (self.width, y))
 
-    f_costs = np.argwhere(values != 0)
-    if f_costs.any():
-        for square in f_costs:
-            cost = values[square[0], square[1]]
-            text = font.render(f'{cost:.0f}', True, (0, 0, 0), (255, 255, 255))
+        # Walls
+        inx = np.argwhere(self.grid == -1)
+        for wall in inx:
+            y, x = wall
+            x, y = x*self.square, y*self.square
+            if (x>0): x+=1
+            if (y>0): y+=1
+            pg.draw.rect(self.win, 0, ((x, y), (self.square-1, self.square-1)))
 
-            x = square[1] * square_size + 2
-            y = square[0] * square_size
+        # Path
+        inx = np.argwhere(self.grid == 3)
+        for path in inx:
+            y, x = path
+            x, y = x*self.square, y*self.square
+            if (x>0): x+=1
+            if (y>0): y+=1
+            pg.draw.rect(self.win, (0, 0, 255), ((x, y), (self.square-1, self.square-1)))
 
-            win.blit(text, (x, y))
+        # Start
+        y, x = self.start
+        x, y = x*self.square, y*self.square
+        if (x>0): x+=1
+        if (y>0): y+=1
+        pg.draw.rect(self.win, (0, 255, 0), ((x, y), (self.square-1, self.square-1)))
 
-    for i in range(win_side // square_size):
-        pg.draw.line(win, 0, (square_size * i, 0), (square_size * i, win_side))
-        pg.draw.line(win, 0, (0, square_size * i), (win_side, square_size * i))
+        # End
+        y, x = self.end
+        x, y = x*self.square, y*self.square
+        if (x>0): x+=1
+        if (y>0): y+=1
+        pg.draw.rect(self.win, (255, 0, 0), ((x, y), (self.square-1, self.square-1)))
 
-    pg.display.flip()
+        if refresh:
+            pg.display.flip()
 
+    def check_click(self):
+        pressed = pg.mouse.get_pressed()
+        if any(pressed):
+            position = pg.mouse.get_pos()
+            row = position[1] // self.square
+            col = position[0] // self.square
 
-def check_click():
-    pressed = pg.mouse.get_pressed()
+            val=0
+            # Left click = start
+            if pressed[0]:
+                self.start = row, col
+                val = 1
 
-    if any(pressed):
-        pos = pg.mouse.get_pos()
-        row = pos[1] // square_size
-        col = pos[0] // square_size
+            # Middle click = wall
+            elif pressed[1]:
+                self.grid[row, col] = -1
 
-        if pressed[0]:
-            grid[row, col] = -1
-
-        elif pressed[2]:
-            if not np.argwhere(grid == 1).any():
-                grid[row, col] = 1
-
-            elif not np.argwhere(grid == 2).any():
-                grid[row, col] = 2
-
-
-def check_presses():
-    global grid, values, pressed_enter
-
-    pressed = pg.key.get_pressed()
-
-    if not pressed_enter:
-        if pressed[pg.K_RETURN]:
-            f1 = Thread(target=algorithm.find_path_animated,
-                        args=(grid,))
-            f1.start()
-            pressed_enter = True
-
-    if pressed[pg.K_ESCAPE]:
-        grid = np.zeros((win_side // square_size, win_side // square_size))
-        values = grid.copy()
-
-        pressed_enter = False
+            # Right click = end
+            elif pressed[2]:
+                self.end = row, col
 
 
-#############
-# MAIN LOOP #
-#############
+    def check_keys(self):
+        pressed = pg.key.get_pressed()
+        
+        if not self.SEARCHED and pressed[pg.K_RETURN]:
+            self.search()
+
+        elif pressed[pg.K_ESCAPE]:
+            self.grid = np.zeros((self.width // self.square, self.height // self.square))
+            self.SEARCHED = False
+
+    def frame(self, quit=True, draw=True, click=True, keys=True):
+        if self.fps:
+            self.clock.tick(self.fps)
+        if quit:
+            if self.check_quit(): return 0
+        if draw:
+            self.draw_window(True)
+        if click:
+            self.check_click()
+        if keys:
+            self.check_keys()
+
+    def search(self):
+        self.SEARCHED = True
+        self.algo.find_path(self.grid, self.start, self.end)
+
 
 if __name__ == '__main__':
-    pressed_enter = False
-
-    # clock = pg.time.Clock()
-    run = True
-    while run:
-        # clock.tick(1)
-
-        for e in pg.event.get():
-            if e.type == pg.QUIT:
-                run = False
-
-        draw_window()
-        check_click()
-        check_presses()
-
+    win = Window(fps=None)
+    while win.run:
+        win.frame()
     pg.quit()
