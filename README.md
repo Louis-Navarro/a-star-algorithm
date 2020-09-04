@@ -25,4 +25,4 @@ How to use
   * The program will created a grid with :
     * A starting point, randomly generated.
     * An ending point, also randomly generated.
-  * It will then print the grid, run the algorithm and print th egrid with the path
+  * It will then print the grid, run the algorithm and print the grid with the path
