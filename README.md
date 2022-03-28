@@ -12,6 +12,16 @@ This repository is a A\* algorithm I made.
 
 ## How to use
 
+You can customize the program using flags:
+
+- -h | --help --> Show this help message and exit
+- -v | --version --> Show program's version number and exit
+- -x | --width --> Width of the window
+- -y | --height --> Height of the window
+- -s | --square --> Size of a square
+- -t | --title --> Title of the window
+- -f | --fps --> The refresh rate of the window
+
 - `main.py` is a program that opens a GUI (using `pygame`) where you can create a maze.
   - To add a wall, click the middle mouse button (be careful, the algorithm can cross two diagonal walls).
   - To place the starting point, click the left mouse button

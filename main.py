@@ -1,3 +1,4 @@
+import argparse
 from algorithm import Algorithm
 
 import pygame as pg
@@ -8,7 +9,7 @@ class Window:
     BACKGROUND_COLOR = (255, 255, 255)
     SEARCHED = False
 
-    def __init__(self, width=500, height=500, square=10, title='A* Algorithm', win=None, fps=60):
+    def __init__(self, width=500, height=500, square=10, title='A* Algorithm', fps=60):
         """This class manages the pygame window and interactions with the window to draw the grid and use the algorithm.
 
         Args:
@@ -37,8 +38,7 @@ class Window:
 
         # Pygame stuff
         pg.init()
-        self.win = win if win else pg.display.set_mode(
-            (width, height))  # Window
+        self.win = pg.display.set_mode((width, height))  # Window
         pg.display.set_caption(title)  # Title
         print(type(self.win))
 
@@ -193,8 +193,35 @@ class Window:
         self.algo.find_path(self.grid, self.start, self.end)
 
 
-if __name__ == '__main__':
-    win = Window(fps=None)
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='GUI using the A* Algorithm to find the shortest path between 2 points, with the possibility to add walls')
+    # Program arguments
+    parser.add_argument('-x', '--width', type=int,
+                        default=500, help='Width of the window')
+    parser.add_argument('-y', '--height', type=int,
+                        default=500, help='Height of the window')
+    parser.add_argument('-s', '--square', type=int,
+                        default=10, help='Size of a square')
+    parser.add_argument('-t', '--title', type=str,
+                        default='A* Algorithm', help='Title of the window')
+    parser.add_argument('-f', '--fps', type=int, default=60,
+                        help='The refresh rate of the window')
+
+    # General arguments
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s 1.0')
+
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    win = Window(args.width, args.height, args.square, args.title, args.fps)
     while win.run:
         win.frame()
     pg.quit()
+
+
+if __name__ == '__main__':
+    main()
