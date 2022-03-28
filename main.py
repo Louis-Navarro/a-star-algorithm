@@ -31,16 +31,15 @@ class Window:
         self.end = height-1, width-1
 
         # Algorithm
-        self.algo = Algorithm((height//square, width//square))
+        self.algo = Algorithm((height // square, width // square))
 
         # Grid
-        self.grid = np.zeros((width // square, height // square))
+        self.grid = np.zeros((height // square, width // square))
 
         # Pygame stuff
         pg.init()
         self.win = pg.display.set_mode((width, height))  # Window
         pg.display.set_caption(title)  # Title
-        print(type(self.win))
 
         self.font = pg.font.SysFont('sourcecodepro', 5)
 
@@ -158,8 +157,7 @@ class Window:
             self.search()
 
         elif pressed[pg.K_ESCAPE]:
-            self.grid = np.zeros(
-                (self.width // self.square, self.height // self.square))
+            self.grid[(self.grid == -1) | (self.grid == 3)] = 0
             self.SEARCHED = False
 
     def frame(self, quit=True, draw=True, click=True, keys=True):

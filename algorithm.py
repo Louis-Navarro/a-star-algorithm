@@ -35,7 +35,7 @@ class Algorithm:
         """Call this function to find the optimal path between the start point and the end point.
         BE AWARE: THIS FUNCTION OVERWRITES THE GIVEN GRID, SO YOU MAY WANT TO CONSIDER COPYING THE GRID BEFORE CALLING THIS FUNCTION
 
-        Args:œ
+        Args:
             grid (ndarray): Array representing the grid, containing a start point (1), an end point (2) and possibly walls (-1)
             beg (Iterable): Iterable containing the coordinates of the starting point
             end (Iterable): Iterable containing the coordinates of the ending point
@@ -45,7 +45,11 @@ class Algorithm:
         self.explore(grid, beg, end)
         print("Backtracking ...")
         self.backtrack(grid, end, beg)
-        self.__init__(self.shape)
+
+        # Reinitialize variables
+        self.vis = np.full(self.shape, False)
+        self.dis = np.full(self.shape, np.inf)
+        self.parent = {}
 
     def ok(self, a, b):
         """Check if a point of coordinate a and b is in the grid
