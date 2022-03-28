@@ -9,7 +9,7 @@ class Window:
     BACKGROUND_COLOR = (255, 255, 255)
     SEARCHED = False
 
-    def __init__(self, width=500, height=500, square=10, title='A* Algorithm', fps=60):
+    def __init__(self, width, height, square, title, fps, allow_diag):
         """This class manages the pygame window and interactions with the window to draw the grid and use the algorithm.
 
         Args:
@@ -31,7 +31,7 @@ class Window:
         self.end = height-1, width-1
 
         # Algorithm
-        self.algo = Algorithm((height // square, width // square))
+        self.algo = Algorithm((height // square, width // square), allow_diag)
 
         # Grid
         self.grid = np.zeros((height // square, width // square))
@@ -205,6 +205,8 @@ def parse_args():
                         default='A* Algorithm', help='Title of the window')
     parser.add_argument('-f', '--fps', type=int, default=60,
                         help='The refresh rate of the window')
+    parser.add_argument('--no-diag', action='store_true',
+                        help='Forbidden the algorithm to move in diagonal (can only move right/left/up/down)')
 
     # General arguments
     parser.add_argument('-v', '--version', action='version',
@@ -215,7 +217,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    win = Window(args.width, args.height, args.square, args.title, args.fps)
+    win = Window(args.width, args.height, args.square,
+                 args.title, args.fps, not args.no_diag)
     while win.run:
         win.frame()
     pg.quit()
