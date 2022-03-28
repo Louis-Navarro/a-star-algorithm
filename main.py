@@ -157,8 +157,11 @@ class Window:
             self.search()
 
         elif pressed[pg.K_ESCAPE]:
-            self.grid[(self.grid == -1) | (self.grid == 3)] = 0
+            self.grid[self.grid == 3] = 0
             self.SEARCHED = False
+
+        elif pressed[pg.K_BACKSPACE]:
+            self.grid[self.grid == -1] = 0
 
     def frame(self, quit=True, draw=True, click=True, keys=True):
         """Function that is called every frame, and is responsible for the frame-to-frame action
