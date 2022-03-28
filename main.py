@@ -80,43 +80,48 @@ class Window:
         for wall in inx:
             y, x = wall
             x, y = x*self.square, y*self.square
+            width, height = self.square - \
+                (1 if x else 0), self.square-(1 if y else 0)
             if (x > 0):
                 x += 1
             if (y > 0):
                 y += 1
-            pg.draw.rect(self.win, 0, ((x, y), (self.square-1, self.square-1)))
+            pg.draw.rect(self.win, 0, ((x, y), (width, height)))
 
         # Path
         inx = np.argwhere(self.grid == 3)
         for path in inx:
             y, x = path
             x, y = x*self.square, y*self.square
+            width, height = self.square - \
+                (1 if x else 0), self.square-(1 if y else 0)
             if (x > 0):
                 x += 1
             if (y > 0):
                 y += 1
-            pg.draw.rect(self.win, (0, 0, 255),
-                         ((x, y), (self.square-1, self.square-1)))
+            pg.draw.rect(self.win, (0, 0, 255), ((x, y), (width, height)))
 
         # Start
         y, x = self.start
         x, y = x*self.square, y*self.square
+        width, height = self.square - \
+            (1 if x else 0), self.square-(1 if y else 0)
         if (x > 0):
             x += 1
         if (y > 0):
             y += 1
-        pg.draw.rect(self.win, (0, 255, 0),
-                     ((x, y), (self.square-1, self.square-1)))
+        pg.draw.rect(self.win, (0, 255, 0), ((x, y), (width, height)))
 
         # End
         y, x = self.end
         x, y = x*self.square, y*self.square
+        width, height = self.square - \
+            (1 if x else 0), self.square-(1 if y else 0)
         if (x > 0):
             x += 1
         if (y > 0):
             y += 1
-        pg.draw.rect(self.win, (255, 0, 0),
-                     ((x, y), (self.square-1, self.square-1)))
+        pg.draw.rect(self.win, (255, 0, 0), ((x, y), (width, height)))
 
         if refresh:
             pg.display.flip()
