@@ -191,7 +191,10 @@ class Window:
         """Function responsible for searching the optimal path between the points
         """
         self.SEARCHED = True
-        self.algo.find_path(self.grid, self.start, self.end)
+        found = self.algo.find_path(self.grid, self.start, self.end)
+        if not found:
+            print('Unable to find a path')
+            self.SEARCHED = False
 
 
 def parse_args():

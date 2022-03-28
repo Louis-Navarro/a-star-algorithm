@@ -39,10 +39,14 @@ class Algorithm:
             grid (ndarray): Array representing the grid, containing a start point (1), an end point (2) and possibly walls (-1)
             beg (Iterable): Iterable containing the coordinates of the starting point
             end (Iterable): Iterable containing the coordinates of the ending point
+
+        Returns:
+            bool: Returns False if the algorithm was unable to find a path between the starting and ending points, otherwise returns True
         """
 
         print("Exploring ...")
-        self.explore(grid, beg, end)
+        if self.explore(grid, beg, end) == False:
+            return False
         print("Backtracking ...")
         self.backtrack(grid, end, beg)
 
@@ -50,6 +54,8 @@ class Algorithm:
         self.vis = np.full(self.shape, False)
         self.dis = np.full(self.shape, np.inf)
         self.parent = {}
+
+        return True
 
     def ok(self, a, b):
         """Check if a point of coordinate a and b is in the grid
@@ -85,6 +91,9 @@ class Algorithm:
             grid (ndarray): Array representing the grid, containing a starting (1) and ending (2) points, and possibly walls (-1)
             beg (Iterable): List/tuple/ndarray representing the coordinates of the first point
             end (Iterable): List/tuple/ndarray representing the coordinates of the second point
+
+        Returns:
+            bool: Returns False if the algorithm was unable to find a path between the starting and ending points, otherwise returns True
         """
         self.dis[beg[0], beg[1]] = self.get_distance(beg, end)
 
@@ -105,6 +114,9 @@ class Algorithm:
                         self.parent[(x, y)] = cur
 
             cur = np.unravel_index(np.argmin(self.dis, axis=None), self.shape)
+            if np.min(self.dis, axis=None) == np.inf:
+                return False
+        return True
 
     def backtrack(self, grid, beg, end):
         """Finds the optimal path between the points
