@@ -62,7 +62,7 @@ class Window:
         """The program calls this function to draw the grid with the starting and ending points, borders, and the path if there it was computed
 
         Args:
-            refresh (_type_): _description_
+            refresh (bool): Wether or not the window should be refreshed (running pg.display.flip())
         """
         self.win.fill(self.BACKGROUND_COLOR)
 
